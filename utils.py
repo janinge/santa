@@ -11,9 +11,6 @@ from skimage.restoration import denoise_tv_chambolle
 from skimage.filters import gaussian
 from skimage.transform import warp, AffineTransform, rotate
 
-RANDOM_SEED = 42
-np.random.seed(RANDOM_SEED)
-
 def plot_labels_matrix(X, y, img_shape=(20, 20)):
     images_per_label = 30
     unique_labels = np.unique(y)
@@ -117,7 +114,6 @@ def plot_stddev_histogram(probs, num_ood=85):
     plt.hist(stddevs, bins=30, color='purple', alpha=0.5, label='Standard deviations')
 
     plt.hist(stddevs[lowest_stddevs], bins=30, color='fuchsia', alpha=0.7, label=f'{num_ood} lowest stddevs')
-
 
     plt.xlabel('Standard deviations')
     plt.ylabel('Frequency')
