@@ -104,16 +104,16 @@ def plot_scaling(X):
     plt.tight_layout()
     plt.show()
 
-
-def plot_stddev_histogram(probs, num_ood=85):
-    stddevs = np.std(probs, axis=1)
-
-    sorted_indices = np.argsort(stddevs)
+def plot_probs_histogram(probs, bins, inflection_point=None, num_ood=85):
+    sorted_indices = np.argsort(probs)
     lowest_stddevs = sorted_indices[:num_ood]
 
-    plt.hist(stddevs, bins=30, color='purple', alpha=0.5, label='Standard deviations')
+    plt.hist(probs, bins=bins, color='fuchsia', alpha=0.5, label='Standard deviations')
 
-    plt.hist(stddevs[lowest_stddevs], bins=30, color='fuchsia', alpha=0.7, label=f'{num_ood} lowest stddevs')
+    plt.hist(probs[lowest_stddevs], bins=bins, color='black', alpha=0.7, label=f'{num_ood} lowest stddevs')
+
+    if inflection_point:
+        plt.axvline(x=inflection_point, color='red', linestyle='--', label='Inflection point')
 
     plt.xlabel('Standard deviations')
     plt.ylabel('Frequency')
@@ -121,26 +121,21 @@ def plot_stddev_histogram(probs, num_ood=85):
 
     plt.show()
 
+def plot_images(X, img_shape=None):
+    num_images = X.shape[0]
 
-def plot_stddev_images(X, probs, num_images=85, img_shape=(20, 20)):
-    stddevs = np.std(probs, axis=1)
-
-    sorted_indices = np.argsort(stddevs)
-    lowest_stddev_indices = sorted_indices[:num_images]
-
-    grid_size = int(np.sqrt(num_images))
+    grid_size = int(np.ceil(np.sqrt(num_images)))
 
     fig, axes = plt.subplots(grid_size, grid_size, figsize=(10, 10))
 
     vmin, vmax = (0, 255) if X.dtype == np.uint8 else (0, 1)
 
     for idx, ax in enumerate(axes.ravel()):
-        if idx >= len(lowest_stddev_indices):
+        if idx >= num_images:
             ax.axis('off')
             continue
 
-        image_idx = lowest_stddev_indices[idx]
-        image = X[image_idx].reshape(*img_shape)
+        image = X[idx].reshape(*img_shape) if img_shape else X[idx]
         ax.imshow(image, cmap='gray', vmin=vmin, vmax=vmax)
         ax.axis('off')
 
